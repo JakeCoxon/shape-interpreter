@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
 
   function Scope(parent) {
-    this.parent = null;
+    this.parent = parent || null;
     this.values = {};
   }
 
@@ -9,7 +9,7 @@ define(function(require, exports, module) {
     this.values[name] = value;
   };
   Scope.prototype.set = function(name, value) {
-    if (this.values[name]) {
+    if (this.values[name] !== undefined) {
       this.values[name] = value;
       return true;
     }
@@ -17,7 +17,7 @@ define(function(require, exports, module) {
     throw "Not found in scope " + name;
   };
   Scope.prototype.get = function(name) {
-    if (this.values[name]) return this.values[name];
+    if (this.values[name] !== undefined) return this.values[name];
     if (this.parent) return this.parent.get(name);
     throw "Not found in scope " + name;
   };

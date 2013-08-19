@@ -2,7 +2,9 @@ define(function(require, exports, module) {
 
   var Shape = require('shape'),
       LinkScope = require('link-scope'),
-      LinkedList = require('linked-list');
+      LinkedList = require('linked-list'),
+      ast = require('ast'),
+      evaluate = require('evaluator');
 
   $(document).ready(function() {
     var env = { head: null };
@@ -12,12 +14,15 @@ define(function(require, exports, module) {
       {type: "create", shape: "rectangle", name: "rect1", x: 10, y: 0, w:20, h:20},
       {type: "move", name: "rect1", x: 20, y: 50},
       {type: "create", shape: "circle", name: "circle1", x: 20, y: 0, w:10, h:10},
+      {type: "setVar", varName: 'y', value: 20},
       {type: "loop", indexVar: "i", count: 5, commands: [
-        {type: "create", shape: "circle", name: "circle1", x: 50, y: 50, w:10, h:10},
+        {type: "create", shape: "circle", name: "circle1", x: new ast.Operator(20, '*', new ast.Var('i')), y: 80, w:20, h:20},
+        {type: "printVar", varName: "y"}
       ]}
     ];
 
     function applyProgram(program, scope) {
+
 
       function move(shape, x, y) {
         return new Shape(shape.shape, x, y, shape.w, shape.h);
@@ -27,14 +32,19 @@ define(function(require, exports, module) {
         var newScope;
         for (var i = 0; i < count; i++) {
           newScope = new LinkScope(scope, scope.list);
+          newScope.declare(indexVar, i);
           applyProgram(commands, newScope);
         }
       }
 
+      function e(expr) { return evaluate(expr, scope); }
+
       function applyCommand(cmd) {
-        if      (cmd.type == "create") scope.declareLink(cmd.name, new Shape(cmd.shape, cmd.x, cmd.y, cmd.w, cmd.h));
-        else if (cmd.type == "move")   scope.setLink(cmd.name, move(scope.getLink(cmd.name), cmd.x, cmd.y));
-        else if (cmd.type == "loop")   loop(cmd.count, cmd.indexVar, cmd.commands);
+        if      (cmd.type == "create")   scope.declareLink(cmd.name, new Shape(cmd.shape, e(cmd.x), e(cmd.y), e(cmd.w), e(cmd.h)));
+        else if (cmd.type == "move")     scope.setLink(cmd.name, move(scope.getLink(cmd.name), e(cmd.x), e(cmd.y)));
+        else if (cmd.type == "loop")     loop(e(cmd.count), cmd.indexVar, cmd.commands);
+        else if (cmd.type == "setVar")   scope.declare(cmd.varName, cmd.value);
+        else if (cmd.type == "printVar") console.log(cmd.varName + " = " + scope.get(cmd.varName));
       }
 
       for (var i = 0; i < program.length; i++) {
@@ -44,6 +54,7 @@ define(function(require, exports, module) {
 
     var rootScope = new LinkScope(null, env);
     applyProgram(program, rootScope);
+
 
     var paper = Raphael("image", 600, 400);
 

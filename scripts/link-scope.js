@@ -6,7 +6,7 @@ define(function(require, exports, module) {
     Scope.call(this, parent);
     this.list = list;
   }
-  LinkScope.prototype = Object.create(Scope);
+  LinkScope.prototype = Object.create(Scope.prototype);
 
   LinkScope.prototype.declareLink = function(name, value) {
     var newHead = new LinkedList(value, this.list.head);

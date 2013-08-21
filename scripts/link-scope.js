@@ -1,6 +1,7 @@
 define(function(require, exports, module) {
 
-  var Scope = require('scope');
+  var Scope = require('scope'),
+      LinkedList = require('linked-list');
 
   function LinkScope(parent, list) {
     Scope.call(this, parent);

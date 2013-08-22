@@ -1,56 +1,54 @@
 define(function(require, exports, module) {
 
-  var LinkedList = require('linked-list');
-
-  function isCommandInProgram(command, program) {
-    anyCommand(program, function(c) { return c == command; });
-  }
-
-  function anyCommand(program, func) {
-    while (program) {
-      if (func(program.elem)) return true;
-      if (program.elem.commands && traverseProgram(program.elem.commands, func)) return true;
-      program = program.next;
-    }
-    return false;
-  }
+  var LinkedList = require('linked-list'),
+      LinkScope = require('link-scope');
 
 
   function Runtime() {
     this.programPointer = null;
     this.program = null;
     this.programStack = null;
+    this.env = { head: null };
+    this.rootScope = null;
+    this.scope = null;
   }
 
   Runtime.prototype.setProgram = function(program) {
     this.program = program;
     this.programStack = new LinkedList(program);
+    this.programPointer = program;
+    this.rootScope = this.scope = new LinkScope(null, this.env);
+  };
 
-    if (!isCommandInProgram(this.programPointer, program)) this.programPointer = program;
+  Runtime.prototype.pushScope = function() {
+    this.scope = new LinkScope(this.scope, this.env);
+    return this.scope;
+  };
+  Runtime.prototype.popScope = function() {
+    this.scope = this.scope.parent;
+  };
+
+  Runtime.prototype.pushStack = function(subprogram) {
+    this.programStack = new LinkedList(this.programPointer, this.programStack);
+  };
+
+  Runtime.prototype.popStack = function(nextProgram) {
+    this.programStack = this.programStack.next;
   };
 
   Runtime.prototype.step = function() {
-    if (this.programPointer.elem.commands) {
-      // Step in
-      this.programStack = new LinkedList(this.programPointer, this.programStack);
-      this.programPointer = this.programPointer.elem.commands;
-    }
-    else if (this.programPointer.next) {
-      this.programPointer = this.programPointer.next;
-    }
-    else if (this.programStack.next) {
-      // Step out
-      this.programPointer = this.programStack.elem.next;
-      this.programStack = this.programStack.next;
-    }
-    else {
-      // End of program
-      return;
-    }
 
-    // Execute command
+    if (this.programPointer) {
+      var next = this.execute(this.programPointer.elem) || this.programPointer.next;
+      this.programPointer = next;
+    }
+    return !!this.programPointer;
 
   };
+
+
+
+  Runtime.prototype.execute = function(command) {};
 
   return Runtime;
 

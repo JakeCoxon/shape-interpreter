@@ -5,7 +5,7 @@ define(function(require, exports, module) {
 
   function LinkScope(parent, list) {
     Scope.call(this, parent);
-    this.list = list;
+    this.list = list || null;
   }
   LinkScope.prototype = Object.create(Scope.prototype);
 

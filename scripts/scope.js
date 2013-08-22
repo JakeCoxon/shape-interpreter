@@ -14,12 +14,12 @@ define(function(require, exports, module) {
       return true;
     }
     if (this.parent) return this.parent.set(name, value);
-    throw "Not found in scope " + name;
+    throw new Error("Not found in scope " + name);
   };
   Scope.prototype.get = function(name) {
     if (this.values[name] !== undefined) return this.values[name];
     if (this.parent) return this.parent.get(name);
-    throw "Not found in scope " + name;
+    throw new Error("Not found in scope " + name);
   };
 
   return Scope;

@@ -41,7 +41,7 @@ define(function(require, exports, module) {
     function e(expr) { return evaluate(expr, scope); }
     
 
-    if      (cmd.type == "create")   scope.declareLink(cmd.name, new Shape(cmd.shape, e(cmd.x), e(cmd.y), e(cmd.w), e(cmd.h)));
+    if      (cmd.type == "create")   scope.declareLink(cmd.name, new Shape(cmd.shape, e(cmd.x), e(cmd.y), e(cmd.w), e(cmd.h), cmd.color));
     else if (cmd.type == "move")     scope.setLink(cmd.name, move(scope.getLink(cmd.name), e(cmd.x), e(cmd.y)));
     else if (cmd.type == "loop")     return this.beginLoop(cmd);
     else if (cmd.type == "endLoop")  return this.endLoop(cmd);

@@ -18,7 +18,9 @@ define(function(require, exports, module) {
     this.programStack = new LinkedList(program);
     this.programPointer = program;
     this.rootScope = this.scope = new LinkScope(null, this.env);
+    this.env.head = null;
   };
+  Runtime.prototype.reset = function() { this.setProgram(this.program); };
 
   Runtime.prototype.pushScope = function() {
     this.scope = new LinkScope(this.scope, this.env);

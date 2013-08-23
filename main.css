@@ -1,3 +1,26 @@
+#image {
+  display: inline-block;
+}
 #image svg {
 	border: 1px solid #aaa;
+}
+
+#command-list {
+  display: inline-block;
+  vertical-align: top;
+  font-family: Arial;
+  font-size: 13px;
+}
+
+#command-list > ul {
+  padding-left: 20px;
+}
+#command-list li {
+  padding: 5px;
+  list-style: none;
+  cursor: default;
+}
+#command-list li.selected {
+  background: #ffaa00;
+  color: white;
 }

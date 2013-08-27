@@ -10,7 +10,7 @@ define(function(require, exports, module) {
   ShapeRuntime.prototype = Object.create(Runtime.prototype);
 
   function move(shape, x, y) {
-    return new Shape(shape.shape, x, y, shape.w, shape.h);
+    return new Shape(shape.name, shape.shape, x, y, shape.w, shape.h, shape.color);
   };
 
   ShapeRuntime.prototype.endLoop = function(cmd) {
@@ -41,7 +41,7 @@ define(function(require, exports, module) {
     function e(expr) { return evaluate(expr, scope); }
     
 
-    if      (cmd.type == "create")   scope.declareLink(cmd.name, new Shape(cmd.shape, e(cmd.x), e(cmd.y), e(cmd.w), e(cmd.h), cmd.color));
+    if      (cmd.type == "create")   scope.declareLink(cmd.name, new Shape(cmd.name, cmd.shape, e(cmd.x), e(cmd.y), e(cmd.w), e(cmd.h), cmd.color));
     else if (cmd.type == "move")     scope.setLink(cmd.name, move(scope.getLink(cmd.name), e(cmd.x), e(cmd.y)));
     else if (cmd.type == "loop")     return this.beginLoop(cmd);
     else if (cmd.type == "endLoop")  return this.endLoop(cmd);

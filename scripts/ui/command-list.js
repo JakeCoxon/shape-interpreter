@@ -30,7 +30,7 @@ define(function(require, exports, module) {
   };
 
   CommandList.prototype.updateSelected = function() {
-    this.selected.removeClass("selected");
+    if (this.selected) this.selected.removeClass("selected");
     this.selected = !this.runtime.programPointer ? this.endItem :
                     !this.runtime.programPointer.prev ? this.startItem :
                     this.runtime.programPointer.prev.listItem;
@@ -62,11 +62,27 @@ define(function(require, exports, module) {
     if (this.onChangeCallback) this.onChangeCallback();
   };
 
+  CommandList.prototype.onProgramInsert = function(elem) {
+    this.generateList();
+  };
+
+  CommandList.prototype.onProgramModify = function(elem) {
+    this.generateList();
+  };
+
   CommandList.prototype.setProgram = function(program) {
     this.program = program;
+    this.program.onInsert($.proxy(this.onProgramInsert, this));
+    this.program.onModify($.proxy(this.onProgramModify, this));
+
+    this.generateList();
+
+  };
+
+  CommandList.prototype.generateList = function() {
     this.list.empty();
 
-    var command = program;
+    var command = this.program.head;
     var parent = new LinkedList(this.list, null);
 
     var listItem = function(self, parent, command) {
@@ -95,10 +111,11 @@ define(function(require, exports, module) {
       command = command.next;
     }
 
+    this.updateSelected();
 
-    this.selected = this.startItem;
-    this.selected.addClass("selected");
+
   };
+
 
   CommandList.prototype.commandToText = function(cmd) {
     if (cmd.type == "create")   return "Create " + cmd.shape + " called " + cmd.name;

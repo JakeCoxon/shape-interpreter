@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
 
   var DoubleLinkedList = require('double-linked-list');
-
+  
   function compile(program) {
 
     var list = program = DoubleLinkedList.fromArray(program);

@@ -13,10 +13,12 @@ define(function(require, exports, module) {
     this.scope = null;
   }
 
+
+
   Runtime.prototype.setProgram = function(program) {
     this.program = program;
-    this.programStack = new LinkedList(program);
-    this.programPointer = program;
+    this.programStack = new LinkedList(program.head);
+    this.programPointer = program.head;
     this.rootScope = this.scope = new LinkScope(null, this.env);
     this.env.head = null;
   };

@@ -1,6 +1,7 @@
 define(function(require, exports, module) {
 
-  function Shape(shape, x, y, w, h, color) {
+  function Shape(name, shape, x, y, w, h, color) {
+    this.name = name;
     this.shape = shape;
     this.x = x; this.y = y;
     this.w = w; this.h = h;

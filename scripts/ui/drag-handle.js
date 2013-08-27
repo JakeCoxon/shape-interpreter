@@ -16,6 +16,7 @@ define(function(require, exports, module) {
       dragCallback(shapeDef, shape, ev);
       elem.attr({cx: shape.attr('cx'), cy: shape.attr('cy')});
     }, function(ev) {
+      elem.node.focus();
     }, function(ev) {
     });
   }

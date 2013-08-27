@@ -4,13 +4,13 @@ define(function(require, exports, module) {
 
   function ImagePanel(target, env) {
     this.env = env;
-    this.paper = Raphael(target.substr(1), 600, 400);
+    this.paper = Raphael($(target)[0], 600, 400);
     this.onDragCallback = null;
   }
 
   ImagePanel.prototype.onShapeDrag = function(shapeDef, shape, ev) {
     if (this.onDragCallback) this.onDragCallback(shapeDef, shape, ev);
-  }
+  };
 
   ImagePanel.prototype.update = function() {
     this.paper.clear();
@@ -39,7 +39,7 @@ define(function(require, exports, module) {
       list = list.next;
     }
 
-  }
+  };
 
   return ImagePanel;
 

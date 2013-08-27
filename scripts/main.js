@@ -5,6 +5,7 @@ define(function(require, exports, module) {
       compile = require('compiler'),
       CommandList = require('ui/command-list'),
       ImagePanel = require('ui/image-panel'),
+      CommandBar = require('ui/command-bar'),
       Program = require('program');
 
   $(document).ready(function() {
@@ -41,14 +42,13 @@ define(function(require, exports, module) {
     var commandList = new CommandList("#command-list", runtime);
 
     var imagePanel = new ImagePanel("#image", runtime.env);
-
     imagePanel.onShapeDrag = function(shapeDef, shape, ev) {
       var x = ev.offsetX, y = ev.offsetY;
       shapeDef.x = x;
       shapeDef.y = y;
 
       var cmd = runtime.programPointer.prev.elem;
-      if (cmd.type == "move" && runtime.scope.getLink(cmd.name) == shapeDef) {
+      if (cmd.type == "move" || cmd.type == "create" && runtime.scope.getLink(cmd.name) == shapeDef) {
         runtime.program.modify(runtime.programPointer.prev, {x: x, y: y});
       }
       else {
@@ -56,11 +56,12 @@ define(function(require, exports, module) {
          {type: "move", name: shapeDef.name, x: x, y: y});
       }
 
-      shape.attr({cx: x, cy: y});
+      shape.attr({cx: x, cy: y, x: x, y: y});
     };
-
     commandList.onChange($.proxy(imagePanel.update, imagePanel));
 
+    var commandBar = new CommandBar("#current-command", commandList);
+    commandList.onChange($.proxy(commandBar.update, commandBar));
 
 
   });

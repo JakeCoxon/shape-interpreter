@@ -40,6 +40,12 @@ define(function(require, exports, module) {
     this.programStack = this.programStack.next;
   };
 
+  Runtime.prototype.replay = function() {
+    var current = this.programPointer;
+    this.reset();
+    while (this.programPointer && this.programPointer != current) this.step();
+  };
+
   Runtime.prototype.step = function() {
 
     if (this.programPointer) {

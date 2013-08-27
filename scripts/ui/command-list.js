@@ -7,7 +7,7 @@ define(function(require, exports, module) {
     this.program = null;
     this.runtime = runtime;
 
-    this.onChangeCallback = null;
+    this.onChangeCallbacks = [];
 
     this.target = $(target).empty();
     this.list = $("<ul>").appendTo(this.target);
@@ -21,12 +21,18 @@ define(function(require, exports, module) {
   }
 
   CommandList.prototype.keypress = function(ev) {
+    if (ev.target != document.body) return;
     if (ev.which == 115) this.step();
     if (ev.which == 114) this.reset();
   };
 
   CommandList.prototype.onChange = function(f) {
-    this.onChangeCallback = f;
+    this.onChangeCallbacks.push(f);
+  };
+
+  CommandList.prototype.selectedCommand = function() {
+    return !this.runtime.programPointer ? this.runtime.program.head.end() :
+    !this.runtime.programPointer.prev ? null : this.runtime.programPointer.prev;
   };
 
   CommandList.prototype.updateSelected = function() {
@@ -39,12 +45,17 @@ define(function(require, exports, module) {
   CommandList.prototype.step = function() {
     this.runtime.step();
     this.updateSelected();
-    if (this.onChangeCallback) this.onChangeCallback();
+    for (var i = 0; i < this.onChangeCallbacks.length; i++) this.onChangeCallbacks[i](this);
   };
   CommandList.prototype.reset = function() {
     this.runtime.reset();
     this.updateSelected();
-    if (this.onChangeCallback) this.onChangeCallback();
+    for (var i = 0; i < this.onChangeCallbacks.length; i++) this.onChangeCallbacks[i](this);
+  };
+  CommandList.prototype.replay = function() {
+    this.runtime.replay();
+    this.updateSelected();
+    for (var i = 0; i < this.onChangeCallbacks.length; i++) this.onChangeCallbacks[i](this);
   };
 
   CommandList.prototype.isProgramBeforeCurrent = function(program) {
@@ -59,7 +70,7 @@ define(function(require, exports, module) {
       this.runtime.step();
     }
     this.updateSelected();
-    if (this.onChangeCallback) this.onChangeCallback();
+    for (var i = 0; i < this.onChangeCallbacks.length; i++) this.onChangeCallbacks[i](this);
   };
 
   CommandList.prototype.onProgramInsert = function(elem) {
@@ -68,6 +79,7 @@ define(function(require, exports, module) {
 
   CommandList.prototype.onProgramModify = function(elem) {
     this.generateList();
+    for (var i = 0; i < this.onChangeCallbacks.length; i++) this.onChangeCallbacks[i](this);
   };
 
   CommandList.prototype.setProgram = function(program) {
@@ -119,10 +131,10 @@ define(function(require, exports, module) {
 
   CommandList.prototype.commandToText = function(cmd) {
     if (cmd.type == "create")   return "Create " + cmd.shape + " called " + cmd.name;
-    else if (cmd.type == "move")     return "Move " + cmd.name + " to " + cmd.x + ", " + cmd.y;
-    else if (cmd.type == "loop")     return "Loop from 0 to " + cmd.count;
+    else if (cmd.type == "move")     return "Move " + cmd.name;
+    else if (cmd.type == "loop")     return "Loop " + cmd.indexVar + " from 0 to " + cmd.count;
     else if (cmd.type == "endLoop")  return "End loop";
-    else if (cmd.type == "setVar")   return "Set " + cmd.varName + " = " + cmd.value;
+    else if (cmd.type == "setVar")   return "Set " + cmd.varName;
     else if (cmd.type == "printVar") return "Print " + cmd.varName;
   };
 

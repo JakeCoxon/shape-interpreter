@@ -44,6 +44,8 @@ define(function(require, exports, module) {
 
     imagePanel.onShapeDrag = function(shapeDef, shape, ev) {
       var x = ev.offsetX, y = ev.offsetY;
+      shapeDef.x = x;
+      shapeDef.y = y;
 
       var cmd = runtime.programPointer.prev.elem;
       if (cmd.type == "move" && runtime.scope.getLink(cmd.name) == shapeDef) {
@@ -55,7 +57,7 @@ define(function(require, exports, module) {
       }
 
       shape.attr({cx: x, cy: y});
-    }
+    };
 
     commandList.onChange($.proxy(imagePanel.update, imagePanel));
 
